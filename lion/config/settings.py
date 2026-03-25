@@ -114,6 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'accounts.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
@@ -145,6 +146,7 @@ DJANGO_APPS = [
 
 PROJECT_APPS = [
     'posts',
+    'accounts',
 ]
 
 THIRD_PARTY_APPS = [
