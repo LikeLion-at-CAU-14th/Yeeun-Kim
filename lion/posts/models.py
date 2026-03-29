@@ -27,3 +27,20 @@ class Post(BaseModel): # BaseModel을 상속받음
 
     def __str__(self):
         return self.title
+    
+class Comment(BaseModel):
+    id = models.AutoField(primary_key = True)
+    content = models.TextField()
+    post = models.ForeignKey(Post, on_delete = models.CASCADE, related_name = 'comments')
+    writer = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'comments')
+    
+    def __str__(self):
+        return f"{self.writer.username}님의 댓글: {self.content[:50]}"
+    
+class Category(BaseModel):
+    id = models.AutoField(primary_key = True)
+    name = models.CharField(max_length = 10)
+    posts = models.ManyToManyField(Post, related_name = 'categories')
+    
+    def __str__(self):
+        return self.name
