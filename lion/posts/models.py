@@ -12,18 +12,18 @@ class BaseModel(models.Model): # models.Model을 상속받음
 
 from accounts.models import User
 
-class Post(BaseModel): # BaseModel을 상속받음
+class Post(BaseModel): 
 
     CHOICES = (
         ('STORED', '보관'),
         ('PUBLISHED', '발행')
     )
 
-    post_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=50)
     content = models.TextField()
     status = models.CharField(max_length=10, choices=CHOICES, default='STORED')
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    writer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
 
     def __str__(self):
         return self.title
