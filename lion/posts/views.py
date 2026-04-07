@@ -66,7 +66,8 @@ def post_list(request):
             'message' : '게시글 목록 조회 성공',
             'data' : post_all_json
         })
-        
+
+@require_http_methods(["GET"])        
 def comment_list(request, post_id):
     
     if request.method == "GET":
@@ -89,6 +90,7 @@ def comment_list(request, post_id):
             'data' : comment_all_json
         })
 
+@require_http_methods(["GET"]) 
 def post_list_by_category(request, category_id):
     category = get_object_or_404(Category, pk = category_id)
     
