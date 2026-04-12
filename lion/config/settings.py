@@ -120,9 +120,9 @@ AUTH_USER_MODEL = 'accounts.User'
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-kr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
@@ -169,3 +169,41 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+# 파이썬 제공 logging 모듈 사용하여 로그 확인하기
+
+LOGGING = {
+    'version' : 1,
+    'disable_existing_loggers' : False,
+    'formatters' : {
+        'precise' : {
+            'format' : "[%(asctime)s] %(levelname)s : %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+    },
+    'handlers' : {
+        'console' : {
+            'class' : 'logging.StreamHandler',
+            'formatter' : 'precise',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'server.log',
+            'formatter': 'precise',
+        },
+        'errors_file' : {
+            'level' : 'WARNING',
+            'class' : 'logging.FileHandler',
+            'filename' : 'errors.log',
+            'formatter' : 'precise',
+        },
+    },
+    'loggers' : {
+        'django' : {
+            'handlers' : ['console', 'file', 'errors_file'],
+            'level' : 'INFO',
+            'propagate' : False,
+        },
+    },
+}
