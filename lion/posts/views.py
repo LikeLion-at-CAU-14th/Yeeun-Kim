@@ -63,13 +63,13 @@ class CommentList(APIView):
         post_instance = get_object_or_404(Post, pk = post_id)
         serializer = CommentSerializer(data = request.data)
         if serializer.is_valid():
-            serializer.save(post_id = post_instance)
+            serializer.save(post = post_instance)
             return Response(serializer.data, status = status.HTTP_201_CREATED)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
 class CommentDetail(APIView):
     def delete(self, request, post_id, comment_id):
-        comment = Comment.objects.get(post_id = post_id, comment_id = comment_id)
+        comment = get_object_or_404(Comment, post = post_id, comment = comment_id)
         comment.delete()
         return Response(
             {

@@ -29,16 +29,16 @@ class Post(BaseModel):
         return self.title
     
 class Comment(BaseModel):
-    comment_id = models.AutoField(primary_key = True)
+    comment = models.AutoField(primary_key = True)
     content = models.TextField()
-    post_id = models.ForeignKey(Post, on_delete = models.CASCADE, related_name = 'comments')
-    user_id = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'user_comments')
+    post = models.ForeignKey(Post, on_delete = models.CASCADE, related_name = 'comments')
+    user = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'user_comments')
     
     def __str__(self):
-        return f"{self.user_id.username}님의 댓글: {self.content[:50]}"
+        return f"{self.user.username}님의 댓글: {self.content[:50]}"
     
 class Category(BaseModel):
-    category_id = models.AutoField(primary_key = True)
+    category = models.AutoField(primary_key = True)
     name = models.CharField(max_length = 10)
     posts = models.ManyToManyField(Post, related_name = 'categories')
     
