@@ -14,8 +14,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from config.permissions import AllowTimePermission, IsOwnerOrReadOnly
 
 class PostList(APIView):
+    permission_classes = [AllowTimePermission, IsAuthenticatedOrReadOnly]
+    
     def post(self, request, format=None):
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid():
@@ -29,6 +33,8 @@ class PostList(APIView):
         return Response(serializer.data)
     
 class PostDetail(APIView):
+    permission_classes = [AllowTimePermission, IsOwnerOrReadOnly]
+
     def get(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
         serializer = PostSerializer(post)
@@ -36,6 +42,7 @@ class PostDetail(APIView):
     
     def put(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
+        self.check_object_permissions(request, post)
         serializer = PostSerializer(post, data=request.data)
         if serializer.is_valid(): # update이니까 유효성 검사 필요
             serializer.save()
@@ -44,6 +51,7 @@ class PostDetail(APIView):
     
     def delete(self, request, post_id):
         post = get_object_or_404(Post, id=post_id)
+        self.check_object_permissions(request, post)
         post.delete()
         return Response(
 	        {
