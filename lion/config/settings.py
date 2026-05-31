@@ -159,7 +159,8 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",    
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.kakao",  
 ]
 
 ACCOUNT_LOGIN_METHODS = {'email'}                  # 로그인 방식 설정

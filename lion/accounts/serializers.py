@@ -74,6 +74,8 @@ class AuthSerializer(serializers.ModelSerializer):
 
         return data
     
+from rest_framework_simplejwt.serializers import RefreshToken
+
 class OAuthSerializer(serializers.ModelSerializer):
     username = serializers.CharField()
     email = serializers.CharField(required=True)

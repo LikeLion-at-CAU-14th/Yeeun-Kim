@@ -10,7 +10,7 @@ class User(AbstractUser):
             return User.objects.get(username=username)
         except Exception:
             return None
-               
+        
     @staticmethod
     def get_user_by_email(email):
         try:
