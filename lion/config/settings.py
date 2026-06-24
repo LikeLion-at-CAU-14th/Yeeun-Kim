@@ -41,7 +41,7 @@ SECRET_KEY = get_secret("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -63,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -119,9 +121,9 @@ AUTH_USER_MODEL = 'accounts.User'
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-kr'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
@@ -150,8 +152,83 @@ PROJECT_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-
+    "corsheaders",
+    "rest_framework",
+    'rest_framework_simplejwt',
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "allauth.socialaccount.providers.kakao",  
 ]
 
+ACCOUNT_LOGIN_METHODS = {'email'}                  # 로그인 방식 설정
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*']    # 회원가입 시 필수 입력 필드 설정
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
+
+# 인증 관련 요청(쿠키, 세션 등)을 허용
+# 예를 들어 브라우저가 백엔드 서버로 쿠키를 전송하거나, 백엔드에서 쿠키를 응답으로 보낼 수 있음pp
+CORS_ALLOW_CREDENTIALS = True
+
+# 서버로 요청 보낼 수 있는 도메인들 정의
+# 여기에서의 localhost는 EC2 인스턴스의 로컬환경이 아니라 프론트엔드 개발 로컬 환경 의미
+# 3000 포트는 프론트엔드 React 애플리케이션의 포트 번호
+# 추후 프론트엔드에서 웹 페이지 배포 후 도메인 매핑했다면 해당 도메인 추가 필요
+CORS_ALLOW_ALL_ORIGINS = True
+
+# 파이썬 제공 logging 모듈 사용하여 로그 확인하기
+
+LOGGING = {
+    'version' : 1,
+    'disable_existing_loggers' : False,
+    'formatters' : {
+        'precise' : {
+            'format' : "[%(asctime)s] %(levelname)s : %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+    },
+    'handlers' : {
+        'console' : {
+            'class' : 'logging.StreamHandler',
+            'formatter' : 'precise',
+        },
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'server.log',
+            'formatter': 'precise',
+        },
+        'errors_file' : {
+            'level' : 'WARNING',
+            'class' : 'logging.FileHandler',
+            'filename' : 'errors.log',
+            'formatter' : 'precise',
+        },
+    },
+    'loggers' : {
+        'django' : {
+            'handlers' : ['console', 'file', 'errors_file'],
+            'level' : 'INFO',
+            'propagate' : False,
+        },
+    },
+}
+
+from datetime import timedelta
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ( # DRF의 기본 인증Authentication 방식을 JWT로 바꿉니다.
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+REST_USE_JWT = True
+
+SIMPLE_JWT = { # JWT 세부내용 설정
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=3),    # 유효기간 3시간
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),    # 유효기간 7일
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': False,
+    'TOKEN_USER_CLASS': 'accounts.User',
+}

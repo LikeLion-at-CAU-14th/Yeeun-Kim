@@ -1,0 +1,18 @@
+[02/Jun/2026 02:13:58] INFO : Watching for file changes with StatReloader
+[24/Jun/2026 11:57:08] INFO : /Users/yeeun/Desktop/멋사/likelion14th/Yeeun-Kim/lion/accounts/models.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+June 02, 2026 - 02:13:58
+Django version 6.0.3, using settings 'config.settings'
+Starting development server at http://0.0.0.0:8000/
+Quit the server with CONTROL-C.
+
+WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.
+For more information on production servers see: https://docs.djangoproject.com/en/6.0/howto/deployment/
+Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x00000001f796b080 (most recent call first):
+  <no Python frame>
