@@ -159,8 +159,7 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",
-    "allauth.socialaccount.providers.kakao",  
+    "allauth.socialaccount.providers.google",    
 ]
 
 ACCOUNT_LOGIN_METHODS = {'email'}                  # 로그인 방식 설정
@@ -176,7 +175,10 @@ CORS_ALLOW_CREDENTIALS = True
 # 여기에서의 localhost는 EC2 인스턴스의 로컬환경이 아니라 프론트엔드 개발 로컬 환경 의미
 # 3000 포트는 프론트엔드 React 애플리케이션의 포트 번호
 # 추후 프론트엔드에서 웹 페이지 배포 후 도메인 매핑했다면 해당 도메인 추가 필요
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [ 
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
 
 # 파이썬 제공 logging 모듈 사용하여 로그 확인하기
 
