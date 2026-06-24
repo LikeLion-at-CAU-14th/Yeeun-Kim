@@ -64,7 +64,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -149,26 +148,19 @@ DJANGO_APPS = [
 PROJECT_APPS = [
     'posts',
     'accounts',
-    'guestbooks',
 ]
 
 THIRD_PARTY_APPS = [
     "corsheaders",
     "rest_framework",
     'rest_framework_simplejwt',
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",    
 ]
 
-ACCOUNT_LOGIN_METHODS = {'email'}                  # 로그인 방식 설정
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*']    # 회원가입 시 필수 입력 필드 설정
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
 
 # 인증 관련 요청(쿠키, 세션 등)을 허용
-# 예를 들어 브라우저가 백엔드 서버로 쿠키를 전송하거나, 백엔드에서 쿠키를 응답으로 보낼 수 있음pp
+# 예를 들어 브라우저가 백엔드 서버로 쿠키를 전송하거나, 백엔드에서 쿠키를 응답으로 보낼 수 있음
 CORS_ALLOW_CREDENTIALS = True
 
 # 서버로 요청 보낼 수 있는 도메인들 정의
