@@ -24,6 +24,7 @@ class Post(BaseModel):
     content = models.TextField()
     status = models.CharField(max_length=10, choices=CHOICES, default='STORED')
     writer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    image_url = models.URLField(max_length=500, null=True, blank=True)
 
     def __str__(self):
         return self.title
