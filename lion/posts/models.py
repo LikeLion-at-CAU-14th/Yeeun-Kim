@@ -24,9 +24,17 @@ class Post(BaseModel):
     content = models.TextField()
     status = models.CharField(max_length=10, choices=CHOICES, default='STORED')
     writer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    image_url = models.URLField(max_length=500, null=True, blank=True)
 
     def __str__(self):
         return self.title
+    
+class Image(BaseModel):
+    id = models.AutoField(primary_key=True)
+    image_url = models.URLField(max_length=500)  # S3에 업로드된 이미지의 URL 저장
+
+    def __str__(self):
+        return f"Image {self.id}"
     
 class Comment(BaseModel):
     comment = models.AutoField(primary_key = True)
@@ -44,3 +52,4 @@ class Category(BaseModel):
     
     def __str__(self):
         return self.name
+    

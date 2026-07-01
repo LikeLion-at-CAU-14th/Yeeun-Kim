@@ -92,9 +92,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+		'ENGINE': 'django.db.backends.mysql',
+		'NAME': 'likelion14th',
+		'USER': get_secret("DB_USER"), 
+		'PASSWORD': get_secret("DB_PW"), 
+		'HOST': get_secret("DB_HOST"),
+		'PORT': get_secret("DB_PORT"),
+	}
 }
 
 
@@ -160,6 +164,8 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
     "allauth.socialaccount.providers.kakao",  
+    "storages",
+    'drf_yasg',
 ]
 
 ACCOUNT_LOGIN_METHODS = {'email'}                  # 로그인 방식 설정
@@ -176,6 +182,33 @@ CORS_ALLOW_CREDENTIALS = True
 # 3000 포트는 프론트엔드 React 애플리케이션의 포트 번호
 # 추후 프론트엔드에서 웹 페이지 배포 후 도메인 매핑했다면 해당 도메인 추가 필요
 CORS_ALLOW_ALL_ORIGINS = True
+
+### AWS ###
+# IAM 사용자 관련 정보
+# accessKeys.csv 파일에 있는 내용을 입력 해주세요
+AWS_ACCESS_KEY_ID = get_secret("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = get_secret("AWS_SECRET_ACCESS_KEY")
+AWS_REGION = "ap-northeast-2" # 서울 리전
+
+### S3 ###
+AWS_STORAGE_BUCKET_NAME = "likelion14th-s3-1"
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_REGION}.amazonaws.com"
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+
+# drf-yasg (Swagger) 설정: Swagger UI에서 Bearer 토큰으로 인증 가능하도록 함
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
+    'USE_SESSION_AUTH': False,
+}
+
 
 # 파이썬 제공 logging 모듈 사용하여 로그 확인하기
 

@@ -209,3 +209,5 @@ Temporary Items
 secrets.json
 
 .vscode/
+
+.idea/
