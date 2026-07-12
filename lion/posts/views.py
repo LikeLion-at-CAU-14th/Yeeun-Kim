@@ -24,6 +24,8 @@ from django.http import Http404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from config.permissions import AllowTimePermission, IsOwnerOrReadOnly
 
+from config.custom_exceptions import PostNotFoundException # 추가 - 커스텀 예외처리 실습용
+
 def upload_image_to_s3(image_file):
     s3_client = boto3.client(
         "s3",
@@ -55,52 +57,15 @@ class PostList(APIView):
     @swagger_auto_schema(
         operation_summary="게시글 생성",
         operation_description="새로운 게시글을 생성합니다.",
-        # Swagger에서 form-data 형식을 테스트 할 수 있도록 함
-        consumes=["multipart/form-data"],
-        manual_parameters=[
-            openapi.Parameter(
-                'title', 
-                openapi.IN_FORM, 
-                description="게시글 제목", 
-                type=openapi.TYPE_STRING, 
-                required=True 
-            ),
-            openapi.Parameter(
-                'content', 
-                openapi.IN_FORM, 
-                description="게시글 내용", 
-                type=openapi.TYPE_STRING, 
-                required=True  
-            ),
-            openapi.Parameter(
-                'image',                  
-                openapi.IN_FORM, 
-                description="업로드할 이미지 파일", 
-                type=openapi.TYPE_FILE,   
-                required=False
-            ),
-        ],
+        request_body=PostSerializer,
         responses={201: PostSerializer, 400: "잘못된 요청"}
     )
     def post(self, request, format=None):
         serializer = PostSerializer(data=request.data)
-        if serializer.is_valid():
-            image_file = request.FILES.get('image')
-            image_url = None
-            
-            if image_file:
-                try:
-                    image_url = upload_image_to_s3(image_file)
-                except Exception as e:
-                    return Response({"error": f"S3 업로드 실패: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-            
-            if image_url:
-                serializer.save(writer=request.user, image_url=image_url)
-            else:
-                serializer.save(writer=request.user)
-                
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     @swagger_auto_schema(
         operation_summary="게시글 목록 조회",
@@ -111,6 +76,23 @@ class PostList(APIView):
         posts = Post.objects.all()
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
+
+# @require_http_methods(["GET"])
+# def get_post_detail(reqeust, id):
+#     try:
+#         post = Post.objects.get(id=id)
+#         post_detail_json = {
+#             "id" : post.id,
+#             "title" : post.title,
+#             "content" : post.content,
+#             "status" : post.status,
+#             "user" : post.user.username
+#         }
+#         return JsonResponse({
+#             "status" : 200,
+#             "data": post_detail_json})
+#     except Post.DoesNotExist:
+#         raise PostNotFoundException
     
 class PostDetail(APIView):
     permission_classes = [AllowTimePermission, IsOwnerOrReadOnly]
