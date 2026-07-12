@@ -25,31 +25,9 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from config.permissions import AllowTimePermission, IsOwnerOrReadOnly
 
 from config.custom_exceptions import PostNotFoundException # 추가 - 커스텀 예외처리 실습용
+from config.custom_api_exceptions import PostConflictException
+from django.utils import timezone
 
-def upload_image_to_s3(image_file):
-    s3_client = boto3.client(
-        "s3",
-        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-        region_name=settings.AWS_REGION
-    )
-
-    _, ext = os.path.splitext(image_file.name)
-    unique_filename = f"{uuid.uuid4()}{ext}"
-    file_path = f"uploads/{unique_filename}"
-   
-    content_type, _ = mimetypes.guess_type(unique_filename)
-    if not content_type:
-        content_type = image_file.content_type
-
-    s3_client.put_object(
-        Bucket=settings.AWS_STORAGE_BUCKET_NAME,
-        Key=file_path,
-        Body=image_file.read(),
-        ContentType=content_type,  
-    )
-
-    return f"https://{settings.AWS_S3_CUSTOM_DOMAIN}/{file_path}"
 
 class PostList(APIView):
     permission_classes = [AllowTimePermission, IsAuthenticatedOrReadOnly]
@@ -63,10 +41,23 @@ class PostList(APIView):
     def post(self, request, format=None):
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            writer_id = request.data.get('writer')
+            
+            import datetime
+            today = datetime.date.today()
+            
+            if writer_id:
+                already_exists = Post.objects.filter(
+                    writer_id=writer_id,
+                    created_at__date=today
+                ).exists()
+                
+                if already_exists:
+                    raise PostConflictException(detail="게시글은 하루에 하나만 올릴 수 있습니다. 내일 다시 시도해주세요.")
+            serializer.save(writer=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+        
     @swagger_auto_schema(
         operation_summary="게시글 목록 조회",
         operation_description="모든 게시글을 조회합니다.",
@@ -227,3 +218,28 @@ class ImageUploadView(APIView):
         serializer = ImageSerializer(image_instance)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+def upload_image_to_s3(image_file):
+    s3_client = boto3.client(
+        "s3",
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        region_name=settings.AWS_REGION
+    )
+
+    _, ext = os.path.splitext(image_file.name)
+    unique_filename = f"{uuid.uuid4()}{ext}"
+    file_path = f"uploads/{unique_filename}"
+   
+    content_type, _ = mimetypes.guess_type(unique_filename)
+    if not content_type:
+        content_type = image_file.content_type
+
+    s3_client.put_object(
+        Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+        Key=file_path,
+        Body=image_file.read(),
+        ContentType=content_type,  
+    )
+
+    return f"https://{settings.AWS_S3_CUSTOM_DOMAIN}/{file_path}"
