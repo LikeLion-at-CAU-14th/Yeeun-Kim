@@ -41,10 +41,8 @@ class PostList(APIView):
     def post(self, request, format=None):
         serializer = PostSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            writer_id = request.data.get('writer')
-            
-            import datetime
-            today = datetime.date.today()
+            writer_id = request.user.id
+            today = timezone.now().date()
             
             if writer_id:
                 already_exists = Post.objects.filter(
