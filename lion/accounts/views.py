@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import logout
 from config.settings import get_secret
-
+from rest_framework.permissions import AllowAny  # 1. 상단에 반드시 임포트!
 from django.shortcuts import redirect
 from json import JSONDecodeError
 from django.http import JsonResponse
@@ -220,6 +220,8 @@ class RegisterView(APIView):
 
 # 로그인 담당 view
 class AuthView(APIView):
+    permission_classes = [AllowAny]  # 2. 이 클래스 내부에 추가 (로그인 안 해도 접근 허용)
+    
     def post(self, request):
         serializer = AuthSerializer(data=request.data)
         

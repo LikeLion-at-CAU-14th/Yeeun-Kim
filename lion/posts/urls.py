@@ -4,6 +4,7 @@ from posts.views import *
 
 urlpatterns = [
     path('', PostList.as_view()), # post 전체 조회
+    #path('<int:id>/', get_post_detail),
     path('<int:post_id>/', PostDetail.as_view()), # post 개별 조회
     
     path('<int:post_id>/comment/', CommentList.as_view()), # Post의 Comment 전체 조회
